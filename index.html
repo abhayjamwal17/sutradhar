@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sutradhar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D0C14;
+    --surface: #15141F;
+    --surface-2: #1C1A29;
+    --surface-3: #211F30;
+    --border: #2A273A;
+    --text: #EDEAE0;
+    --text-dim: #938FA6;
+    --text-faint: #65617A;
+    --gold: #E3A23E;
+    --gold-soft: #3A2E18;
+    --maroon: #C15568;
+    --green: #5FB57F;
+    --green-soft: #17271E;
+    --teal: #4CAFA6;
+    --shadow: 0 24px 60px -30px rgba(0,0,0,0.7);
+  }
+  :root[data-theme="light"] {
+    --bg: #F7F4ED;
+    --surface: #FFFFFF;
+    --surface-2: #F0ECE1;
+    --surface-3: #E8E2D2;
+    --border: #DDD6C2;
+    --text: #1E1C14;
+    --text-dim: #6E6A58;
+    --text-faint: #9C9680;
+    --gold-soft: #FBEAC9;
+    --green-soft: #E3F2E7;
+    --shadow: 0 24px 60px -34px rgba(30,28,20,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', -apple-system, system-ui, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+  }
+  @media (max-width: 860px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .mobile-nav { display: flex !important; }
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .wordmark {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.45rem;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 8px;
+  }
+  .wordmark .dot { color: var(--gold); font-style: italic; }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav button {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 9px;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav button:hover { background: var(--surface-2); color: var(--text); }
+  .nav button[aria-current="true"] {
+    background: var(--surface-2);
+    color: var(--text);
+    font-weight: 500;
+    box-shadow: inset 2px 0 0 var(--gold);
+  }
+  .nav .ic { width: 16px; text-align: center; opacity: 0.8; font-size: 0.85rem; }
+  .sidebar-foot {
+    margin-top: auto;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    padding: 0 8px;
+    line-height: 1.5;
+  }
+
+  .mobile-nav {
+    display: none;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .mobile-nav button {
+    all: unset;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .mobile-nav button[aria-current="true"] {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1C1308;
+    font-weight: 600;
+  }
+
+  /* ---------- Main ---------- */
+  .main { padding: 28px 32px 64px; max-width: 980px; }
+  @media (max-width: 600px) { .main { padding: 20px 18px 48px; } }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .event-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin: 0;
+  }
+  .event-sub { font-size: 0.85rem; color: var(--text-dim); margin-top: 4px; }
+  .chip-live {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--green);
+    background: var(--green-soft);
+    padding: 5px 11px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip-live::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  section { animation: rise 0.45s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  h3.section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+  }
+  .section-sub { font-size: 0.85rem; color: var(--text-dim); margin: 0 0 18px; max-width: 58ch; line-height: 1.55; }
+
+  /* partner badge */
+  .rail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.01em;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .rail-badge .sw { width: 6px; height: 6px; border-radius: 50%; }
+  .rail-badge.voice .sw { background: var(--teal); }
+  .rail-badge.pay .sw { background: var(--gold); }
+  .rail-badge.log .sw { background: var(--maroon); }
+
+  /* ---------- Dashboard ---------- */
+  .bento {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 700px) { .bento { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .panel.tall { grid-row: span 2; }
+
+  .budget-num { font-family: 'Fraunces', serif; font-size: 2.1rem; font-weight: 500; margin: 2px 0 2px; }
+  .budget-label { font-size: 0.78rem; color: var(--text-dim); }
+  .bar-track { height: 7px; background: var(--surface-3); border-radius: 99px; margin-top: 14px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--teal)); border-radius: 99px; width: 68%; }
+
+  .focus-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.86rem;
+  }
+  .focus-item:last-child { border-bottom: none; }
+  .focus-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); margin-top: 6px; flex-shrink: 0; }
+  .focus-item b { font-weight: 500; }
+  .focus-item span.meta { display: block; color: var(--text-dim); font-size: 0.78rem; margin-top: 2px; }
+
+  .conn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+  .conn {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.82rem;
+    padding: 9px 2px;
+  }
+  .conn-ok { color: var(--green); font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .conn-ok::before { content: '✓'; }
+
+  /* ---------- Vendors (pipeline) ---------- */
+  .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 760px) { .pipeline { grid-template-columns: 1fr 1fr; } }
+  .pcol-head { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; color: var(--text-dim); margin-bottom: 10px; }
+  .vcard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px;
+    margin-bottom: 10px;
+    font-size: 0.82rem;
+  }
+  .vcard .vname { font-weight: 500; margin-bottom: 4px; }
+  .vcard .vreason { color: var(--text-dim); font-size: 0.76rem; line-height: 1.45; margin-bottom: 8px; }
+  .vcard .vmeta { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--text-faint); }
+
+  /* ---------- Payments (ledger) ---------- */
+  .ledger { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  .ledger th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    padding: 0 10px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ledger td { padding: 13px 10px; border-bottom: 1px solid var(--border); }
+  .ledger tr:last-child td { border-bottom: none; }
+  .status-pill { font-size: 0.7rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; display: inline-block; }
+  .status-paid { background: var(--green-soft); color: var(--green); }
+  .status-due { background: var(--gold-soft); color: var(--gold); }
+  .status-sched { background: var(--surface-3); color: var(--text-dim); }
+
+  /* ---------- Logistics ---------- */
+  .ship-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .ship-route { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; }
+  .ship-route .arrow { color: var(--text-faint); }
+  .ship-meta { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 10px; }
+  .conflict {
+    background: rgba(193,85,104,0.1);
+    border: 1px solid rgba(193,85,104,0.35);
+    color: var(--maroon);
+    font-size: 0.78rem;
+    padding: 9px 12px;
+    border-radius: 9px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Activity ---------- */
+  .timeline { border-left: 2px solid var(--border); margin-left: 6px; padding-left: 20px; display: flex; flex-direction: column; gap: 18px; }
+  .tl-item { position: relative; font-size: 0.84rem; }
+  .tl-item::before {
+    content: '';
+    position: absolute; left: -26px; top: 4px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--bg);
+  }
+  .tl-item .tl-time { font-size: 0.72rem; color: var(--text-faint); margin-bottom: 3px; }
+  .tl-item .tl-body { color: var(--text-dim); line-height: 1.5; }
+  .tl-item b { color: var(--text); font-weight: 500; }
+
+  /* ---------- Connections ---------- */
+  .conn-list { display: flex; flex-direction: column; gap: 10px; }
+  .conn-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .conn-card .ctitle { font-weight: 500; font-size: 0.92rem; }
+  .conn-card .csub { font-size: 0.76rem; color: var(--text-dim); margin-top: 2px; }
+  .toggle {
+    width: 38px; height: 22px; border-radius: 99px;
+    background: var(--green);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; right: 2px;
+    width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  }
+
+  .note-block {
+    margin-top: 22px;
+    padding: 16px 18px;
+    background: var(--surface-2);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .note-block b { color: var(--text); }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="wordmark">Sutra<span class="dot">dhar</span></div>
+    <nav class="nav" id="navDesktop"></nav>
+    <div class="sidebar-foot">Product demo · not a live account</div>
+  </aside>
+
+  <nav class="mobile-nav" id="navMobile"></nav>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 class="event-name">Sharma × Verma</h1>
+        <div class="event-sub">18 October · Saket, Delhi · 150 guests</div>
+      </div>
+      <span class="chip-live">Agent active</span>
+    </div>
+
+    <div id="content"></div>
+  </main>
+
+</div>
+
+<script>
+const screens = {
+  dashboard: {
+    label: "Dashboard",
+    icon: "◆",
+    title: "Where things stand",
+    sub: "One screen, not ten notifications — what's done, what's due, what's waiting on you.",
+    render: () => `
+      <div class="bento">
+        <div class="panel">
+          <div class="budget-label">Budget used</div>
+          <div class="budget-num">₹8.2L <span style="font-size:1rem;color:var(--text-faint);font-family:'IBM Plex Sans'">of ₹12L</span></div>
+          <div class="bar-track"><div class="bar-fill"></div></div>
+        </div>
+        <div class="panel tall">
+          <h3 class="section-title" style="font-size:0.95rem;margin-bottom:14px;">Today's focus</h3>
+          <div class="focus-item"><div class="focus-dot"></div><div><b>Decor quote came in</b> — ₹42,000, within budget<span class="meta">via Gnani call · 3m12s</span></div></div>
+          <div class="focus-item"><div class="focus-dot"></div><div><b>Catering advance due</b> in 2 days<span class="meta">₹15,200 · Pine Labs payment link sent</span></div></div>
+          <div class="focus-item"><div class="focus-dot"></div><div><b>Delivery window confirmed</b><span class="meta">Sat, 4–6 PM · matches venue hours</span></div></div>
+        </div>
+        <div class="panel">
+          <h3 class="section-title" style="font-size:0.95rem;margin-bottom:2px;">Connected</h3>
+          <div class="section-sub" style="margin-bottom:0;">No installs — the agent reaches people where they already are.</div>
+          <div class="conn-row">
+            <div class="conn">WhatsApp <span class="conn-ok">Connected</span></div>
+            <div class="conn">Gmail <span class="conn-ok">Connected</span></div>
+            <div class="conn">Google Sheets <span class="conn-ok">Connected</span></div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  vendors: {
+    label: "Vendors",
+    icon: "✦",
+    title: "Vendors",
+    sub: "Every card carries its reasoning — fit on budget, fit on venue, real reviews. Calls run through Gnani; nothing closes without you.",
+    render: () => {
+      const cols = [
+        { name: "Contacted", items: [["Spice Trail", "Call placed · awaiting quote", "Gnani · in progress"]] },
+        { name: "Quoted", items: [["Royal Bawarchi", "₹38k · worked 2 weddings at your venue", "4.6★"]] },
+        { name: "Shortlisted", items: [["Delhi Darbar", "₹41k · known for Kashmiri menu", "4.8★"], ["Royal Bawarchi", "₹38k · best venue-fit score", "4.6★"]] },
+        { name: "Booked", items: [["Lotus Decor", "₹42,000 · confirmed Sat 4–6 PM", "Paid 50%"]] }
+      ];
+      return `<div class="pipeline">` + cols.map(c => `
+        <div>
+          <div class="pcol-head">${c.name.toUpperCase()}</div>
+          ${c.items.map(([n,r,m]) => `
+            <div class="vcard">
+              <div class="vname">${n}</div>
+              <div class="vreason">${r}</div>
+              <div class="vmeta"><span>${m}</span><span class="rail-badge voice"><span class="sw"></span>Gnani</span></div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('') + `</div>`;
+    }
+  },
+  payments: {
+    label: "Payments",
+    icon: "₹",
+    title: "Payments",
+    sub: "Milestone-based, automatically chased when overdue — nobody has to ask twice.",
+    render: () => `
+      <div style="margin-bottom:14px;"><span class="rail-badge pay"><span class="sw"></span>Payments · Pine Labs</span></div>
+      <table class="ledger">
+        <tr><th>Vendor</th><th>Milestone</th><th>Amount</th><th>Status</th></tr>
+        <tr><td>Lotus Decor</td><td>Advance</td><td>₹21,000</td><td><span class="status-pill status-paid">Paid</span></td></tr>
+        <tr><td>Royal Bawarchi</td><td>Advance</td><td>₹15,200</td><td><span class="status-pill status-due">Due in 2 days · reminder sent</span></td></tr>
+        <tr><td>Lotus Decor</td><td>Final</td><td>₹21,000</td><td><span class="status-pill status-sched">Scheduled · event day</span></td></tr>
+        <tr><td>Delhi Darbar</td><td>Advance</td><td>—</td><td><span class="status-pill status-sched">Pending approval</span></td></tr>
+      </table>
+    `
+  },
+  logistics: {
+    label: "Logistics",
+    icon: "▣",
+    title: "Logistics",
+    sub: "Cross-region vendor shipments, and a check against the venue's actual hours before anything is scheduled.",
+    render: () => `
+      <div style="margin-bottom:14px;"><span class="rail-badge log"><span class="sw"></span>Logistics · Delhivery</span></div>
+      <div class="ship-card">
+        <div class="ship-route">Jaipur <span class="arrow">→</span> Saket, Delhi</div>
+        <div class="ship-meta">Waybill #DL48213907 · decor fabric & props · ETA Fri, 2 days before event</div>
+      </div>
+      <div class="ship-card">
+        <div class="ship-route">Local vendor <span class="arrow">→</span> Venue</div>
+        <div class="ship-meta">Catering tea-service equipment · requested window 7–9 PM</div>
+        <div class="conflict">⚠ Venue closes service at 7 PM — window conflicts. Rescheduled to 2–4 PM, vendor notified.</div>
+      </div>
+    `
+  },
+  activity: {
+    label: "Activity",
+    icon: "≋",
+    title: "Activity",
+    sub: "A running log of what the agent decided, and why — nothing happens silently.",
+    render: () => `
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-time">Today · 1:58 PM</div><div class="tl-body">Sent <b>Nikhil</b> the headcount request for Royal Bawarchi — due 6 PM.</div></div>
+        <div class="tl-item"><div class="tl-time">Today · 5:50 PM</div><div class="tl-body">No response after 4 hours. Rule: time-sensitive + unresponsive → reroute to co-decision-maker.</div></div>
+        <div class="tl-item"><div class="tl-time">Today · 5:51 PM</div><div class="tl-body">Rerouted to <b>Priya</b> with full context — last known count, deadline, vendor.</div></div>
+        <div class="tl-item"><div class="tl-time">Yesterday · 11:02 AM</div><div class="tl-body">Payment reminder sent to <b>self</b> for Royal Bawarchi advance — due in 2 days.</div></div>
+        <div class="tl-item"><div class="tl-time">Yesterday · 9:40 AM</div><div class="tl-body">Delivery conflict detected for catering equipment — rescheduled automatically, vendor notified via call.</div></div>
+      </div>
+    `
+  },
+  connections: {
+    label: "Connections",
+    icon: "⌁",
+    title: "Connections",
+    sub: "This is how the agent reaches real people — no app for guests or vendors to install, ever.",
+    render: () => `
+      <div class="conn-list">
+        <div class="conn-card"><div><div class="ctitle">WhatsApp Business</div><div class="csub">All vendor and guest messages run here</div></div><div class="toggle"></div></div>
+        <div class="conn-card"><div><div class="ctitle">Gmail</div><div class="csub">Vendor contracts and formal confirmations</div></div><div class="toggle"></div></div>
+        <div class="conn-card"><div><div class="ctitle">Google Sheets</div><div class="csub">The shared ledger, kept in sync automatically</div></div><div class="toggle"></div></div>
+      </div>
+      <div class="note-block"><b>Why this matters:</b> the couple sees everything here, on one screen, with no install. Vendors and guests never leave WhatsApp or a phone call — the agent meets them exactly where they already work.</div>
+    `
+  }
+};
+
+const order = ["dashboard","vendors","payments","logistics","activity","connections"];
+const navDesktop = document.getElementById('navDesktop');
+const navMobile = document.getElementById('navMobile');
+const content = document.getElementById('content');
+
+function renderScreen(key) {
+  const s = screens[key];
+  content.innerHTML = `
+    <section>
+      <h3 class="section-title">${s.title}</h3>
+      <p class="section-sub">${s.sub}</p>
+      ${s.render()}
+    </section>
+  `;
+  [navDesktop, navMobile].forEach(nav => {
+    [...nav.children].forEach(btn => {
+      btn.setAttribute('aria-current', btn.dataset.key === key ? 'true' : 'false');
+    });
+  });
+}
+
+order.forEach(key => {
+  const s = screens[key];
+  const b1 = document.createElement('button');
+  b1.dataset.key = key;
+  b1.innerHTML = `<span class="ic">${s.icon}</span> ${s.label}`;
+  b1.addEventListener('click', () => renderScreen(key));
+  navDesktop.appendChild(b1);
+
+  const b2 = document.createElement('button');
+  b2.dataset.key = key;
+  b2.textContent = s.label;
+  b2.addEventListener('click', () => renderScreen(key));
+  navMobile.appendChild(b2);
+});
+
+renderScreen('dashboard');
+</script>
+
+</body>
+</html>
